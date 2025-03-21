@@ -1,47 +1,50 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <div class="min-h-screen flex flex-col bg-gray-100">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4">
+      <h1 class="text-3xl font-bold">Tray Test</h1>
+    </header>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
+    <!-- Conteúdo -->
+    <main class="flex-1 p-6">
+      <router-view />
+    </main>
 
-  <main>
-    <TheWelcome />
-  </main>
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white p-4 text-center">
+      <p>© 2025 Tray Test</p>
+    </footer>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script lang="ts">
+import GoogleLogin from './components/GoogleLogin.vue';
+import { useRouter } from 'vue-router';
+import {onMounted, ref} from "vue";
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
+export default {
+  components: {
+    GoogleLogin
+  },
+  setup() {
+    const token = ref<string | null>(null);
+    const redirectTo = ref<string | null>(null);
+    const router = useRouter();
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+    onMounted(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      token.value = urlParams.get('token');
+      redirectTo.value = urlParams.get('redirect');
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+      if (urlParams.has('token')) {
+        localStorage.setItem("token", token.value);
+      }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+      if (redirectTo.value) {
+        router.push({ name: redirectTo.value });
+      }
+    });
+    return { token, redirectTo };
+  },
+};
+</script>

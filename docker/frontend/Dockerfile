@@ -12,4 +12,4 @@ RUN chown -R jose:jose /app
 # Trocar para usuário normal
 USER jose
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD ["sh"]
